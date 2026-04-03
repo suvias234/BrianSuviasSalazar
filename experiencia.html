@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+  <!-- Fuentes -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+  <!-- Estilos compartidos (temas, animaciones, componentes) -->
+  <link href="./site.css" rel="stylesheet" />
+
+  <!-- Detección de tema ANTES del primer paint (evita FOUC) -->
+  <script>
+    (function initThemeBeforePaint() {
+      "use strict";
+      try {
+        var STORAGE_KEY = "theme";
+        var savedTheme = null;
+        try {
+          savedTheme = localStorage.getItem(STORAGE_KEY);
+        } catch (e) {
+          console.warn("[Theme] localStorage no disponible:", e.message);
+        }
+
+        var shouldBeDark = false;
+        if (savedTheme === "dark") {
+          shouldBeDark = true;
+        } else if (savedTheme === "light") {
+          shouldBeDark = false;
+        } else {
+          try {
+            shouldBeDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+          } catch (e) {
+            console.warn("[Theme] matchMedia no disponible:", e.message);
+          }
+        }
+
+        if (shouldBeDark) {
+          document.documentElement.classList.add("dark");
+        }
+      } catch (error) {
+        console.error("[Theme] Error en inicialización:", error);
+      }
+    })();
+  </script>
+
+  <!-- Tailwind Config (idéntico al index.html — colores vía CSS vars) -->
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface":                    "rgb(var(--color-surface) / <alpha-value>)",
+            "surface-dim":                "rgb(var(--color-surface-dim) / <alpha-value>)",
+            "surface-bright":             "rgb(var(--color-surface-bright) / <alpha-value>)",
+            "surface-container-lowest":   "rgb(var(--color-surface-container-lowest) / <alpha-value>)",
+            "surface-container-low":      "rgb(var(--color-surface-container-low) / <alpha-value>)",
+            "surface-container":          "rgb(var(--color-surface-container) / <alpha-value>)",
+            "surface-container-high":     "rgb(var(--color-surface-container-high) / <alpha-value>)",
+            "surface-container-highest":  "rgb(var(--color-surface-container-highest) / <alpha-value>)",
+            "surface-variant":            "rgb(var(--color-surface-variant) / <alpha-value>)",
+            "on-surface":                 "rgb(var(--color-on-surface) / <alpha-value>)",
+            "on-surface-variant":         "rgb(var(--color-on-surface-variant) / <alpha-value>)",
+            "on-background":              "rgb(var(--color-on-background) / <alpha-value>)",
+            "background":                 "rgb(var(--color-background) / <alpha-value>)",
+            "primary":                    "rgb(var(--color-primary) / <alpha-value>)",
+            "on-primary":                 "rgb(var(--color-on-primary) / <alpha-value>)",
+            "primary-container":          "rgb(var(--color-primary-container) / <alpha-value>)",
+            "on-primary-container":       "rgb(var(--color-on-primary-container) / <alpha-value>)",
+            "primary-fixed":              "rgb(var(--color-primary-fixed) / <alpha-value>)",
+            "primary-fixed-dim":          "rgb(var(--color-primary-fixed-dim) / <alpha-value>)",
+            "on-primary-fixed":           "rgb(var(--color-on-primary-fixed) / <alpha-value>)",
+            "on-primary-fixed-variant":   "rgb(var(--color-on-primary-fixed-variant) / <alpha-value>)",
+            "inverse-primary":            "rgb(var(--color-inverse-primary) / <alpha-value>)",
+            "secondary":                  "rgb(var(--color-secondary) / <alpha-value>)",
+            "on-secondary":               "rgb(var(--color-on-secondary) / <alpha-value>)",
+            "secondary-container":        "rgb(var(--color-secondary-container) / <alpha-value>)",
+            "on-secondary-container":     "rgb(var(--color-on-secondary-container) / <alpha-value>)",
+            "secondary-fixed":            "rgb(var(--color-secondary-fixed) / <alpha-value>)",
+            "secondary-fixed-dim":        "rgb(var(--color-secondary-fixed-dim) / <alpha-value>)",
+            "on-secondary-fixed":         "rgb(var(--color-on-secondary-fixed) / <alpha-value>)",
+            "on-secondary-fixed-variant": "rgb(var(--color-on-secondary-fixed-variant) / <alpha-value>)",
+            "tertiary":                   "rgb(var(--color-tertiary) / <alpha-value>)",
+            "on-tertiary":                "rgb(var(--color-on-tertiary) / <alpha-value>)",
+            "tertiary-container":         "rgb(var(--color-tertiary-container) / <alpha-value>)",
+            "on-tertiary-container":      "rgb(var(--color-on-tertiary-container) / <alpha-value>)",
+            "tertiary-fixed":             "rgb(var(--color-tertiary-fixed) / <alpha-value>)",
+            "tertiary-fixed-dim":         "rgb(var(--color-tertiary-fixed-dim) / <alpha-value>)",
+            "on-tertiary-fixed":          "rgb(var(--color-on-tertiary-fixed) / <alpha-value>)",
+            "on-tertiary-fixed-variant":  "rgb(var(--color-on-tertiary-fixed-variant) / <alpha-value>)",
+            "outline":                    "rgb(var(--color-outline) / <alpha-value>)",
+            "outline-variant":            "rgb(var(--color-outline-variant) / <alpha-value>)",
+            "inverse-surface":            "rgb(var(--color-inverse-surface) / <alpha-value>)",
+            "inverse-on-surface":         "rgb(var(--color-inverse-on-surface) / <alpha-value>)",
+            "error":                      "rgb(var(--color-error) / <alpha-value>)",
+            "on-error":                   "rgb(var(--color-on-error) / <alpha-value>)",
+            "error-container":            "rgb(var(--color-error-container) / <alpha-value>)",
+            "on-error-container":         "rgb(var(--color-on-error-container) / <alpha-value>)",
+            "surface-tint":               "rgb(var(--color-surface-tint) / <alpha-value>)",
+          },
+          fontFamily: {
+            "headline": ["Playfair Display", "serif"],
+            "body":     ["DM Sans", "sans-serif"],
+            "label":    ["JetBrains Mono", "monospace"],
+          },
+          borderRadius: {
+            DEFAULT: "0.375rem",
+            lg:      "0.625rem",
+            xl:      "1rem",
+            full:    "1.25rem",
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /*
+      timeline-gradient usa CSS vars para que cambie con el tema.
+      Es la línea vertical que conecta los nodos del timeline.
+    */
+    .timeline-gradient {
+      background: linear-gradient(
+        180deg,
+        transparent 0%,
+        rgb(var(--color-outline-variant)) 15%,
+        rgb(var(--color-outline-variant)) 85%,
+        transparent 100%
+      );
+    }
+  </style>
+</head>
+
+<body class="bg-surface text-on-surface font-body selection:bg-primary/20 selection:text-primary">
+
+  <!-- ====================================================================
+       NAVBAR (idéntica estructura al index, con "Experience" activo)
+       ==================================================================== -->
+  <nav class="fixed top-0 w-full z-50 bg-surface/85 glass-nav border-b border-outline-variant/20">
+    <div class="flex justify-between items-center max-w-7xl mx-auto px-6 h-16">
+      <a href="./index.html" class="text-xl font-bold tracking-tighter font-headline text-on-surface hover:text-primary transition-colors">
+        Brian Suvias
+      </a>
+
+      <!-- Desktop Nav -->
+      <div class="hidden md:flex items-center gap-8 font-body text-sm tracking-tight">
+        <a class="text-on-surface-variant hover:text-primary transition-colors link-underline" href="./proyectos.html">Projects</a>
+        <!-- Link activo: text-primary + border-b. Antes era text-blue-400 (hardcoded) -->
+        <a class="text-primary font-semibold border-b border-primary pb-1" href="./experiencia.html">Experience</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors link-underline" href="./skills.html">Skills</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors link-underline" href="./contacto.html">Contact</a>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button id="theme-toggle" aria-label="Toggle theme"
+          class="p-2 hover:bg-surface-container-high rounded-lg transition-all duration-300 text-on-surface-variant hover:text-primary">
+          <span id="theme-icon" class="material-symbols-outlined">light_mode</span>
+        </button>
+        <button class="p-2 hover:bg-surface-container-high rounded-lg transition-all duration-300 text-on-surface-variant hover:text-primary">
+          <span class="material-symbols-outlined">language</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ====================================================================
+       MAIN CONTENT
+       ==================================================================== -->
+  <main class="pt-32 pb-24 px-6 max-w-5xl mx-auto">
+
+    <!-- Header -->
+    <header class="mb-20 text-center md:text-left animate-fade-up">
+      <h1 class="font-headline text-5xl md:text-7xl font-extrabold tracking-tight mb-4 text-on-surface">
+        Career Journey
+      </h1>
+      <p class="text-on-surface-variant max-w-2xl text-lg leading-relaxed">
+        A trajectory of modernizing enterprise systems, building security-first platforms,
+        and engineering scalable solutions across the full stack.
+      </p>
+    </header>
+
+    <!-- ==================================================================
+         TIMELINE
+         ================================================================== -->
+    <div class="relative">
+      <!-- Línea vertical central (desktop) -->
+      <div class="absolute left-4 md:left-1/2 top-0 bottom-0 w-px timeline-gradient -translate-x-1/2 hidden md:block"></div>
+
+      <div class="space-y-24">
+
+        <!-- ────────────────────────────────────────────────────────────────
+             ENTRY 1: Software Engineer — Grupo Salinas / TotalCybersec
+             ──────────────────────────────────────────────────────────────── -->
+        <div class="relative flex flex-col md:flex-row items-center justify-between group animate-fade-up">
+          <!-- Fecha (desktop — lado izquierdo) -->
+          <div class="hidden md:block w-[45%] text-right pr-12">
+            <span class="font-label text-xs uppercase tracking-widest text-primary font-medium">Dec 2022 – Present</span>
+          </div>
+
+          <!-- Nodo central -->
+          <div class="absolute left-4 md:left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-primary border-4 border-surface ring-4 ring-primary/10 z-10"></div>
+
+          <!-- Card -->
+          <div class="w-full md:w-[45%] pl-12 md:pl-12">
+            <div class="p-8 rounded-xl bg-surface-container-lowest border border-outline-variant/20 hover:border-primary/30 transition-all duration-500 shadow-lg shadow-surface-dim/30 card-hover">
+              <span class="md:hidden font-label text-[10px] uppercase tracking-widest text-primary mb-2 block">Dec 2022 – Present</span>
+              <h3 class="text-2xl font-bold font-headline text-on-surface mb-1">Software Engineer</h3>
+              <p class="text-primary font-medium mb-4">Grupo Salinas / TotalCybersec</p>
+              <ul class="space-y-3 text-sm text-on-surface-variant leading-relaxed">
+                <li class="flex gap-3 items-start">
+                  <span class="material-symbols-outlined text-primary text-lg shrink-0" style="font-variation-settings: 'opsz' 18;">terminal</span>
+                  <span>Leading IEECO platform migration from .NET 4.8 WebForms to .NET 10 Web API + SPA using Strangler Fig pattern with YARP reverse proxy.</span>
+                </li>
+                <li class="flex gap-3 items-start">
+                  <span class="material-symbols-outlined text-primary text-lg shrink-0" style="font-variation-settings: 'opsz' 18;">database</span>
+                  <span>Designing Oracle PL/SQL stored procedures with bind-variable injection prevention, pagination optimization, and permission deduplication.</span>
+                </li>
+                <li class="flex gap-3 items-start">
+                  <span class="material-symbols-outlined text-primary text-lg shrink-0" style="font-variation-settings: 'opsz' 18;">shield</span>
+                  <span>Implementing JWT dual-authentication schemes, AES-256-CBC connection string encryption, and layered C# service architecture.</span>
+                </li>
+              </ul>
+              <div class="mt-6 flex flex-wrap gap-2">
+                <span class="tech-tag px-2.5 py-0.5 rounded-lg bg-secondary-container/50 text-on-secondary-container font-label text-[10px] tracking-wider">.NET 10</span>
+                <span class="tech-tag px-2.5 py-0.5 rounded-lg bg-secondary-container/50 text-on-secondary-container font-label text-[10px] tracking-wider">Oracle PL/SQL</span>
+                <span class="tech-tag px-2.5 py-0.5 rounded-lg bg-secondary-container/50 text-on-secondary-container font-label text-[10px] tracking-wider">C#</span>
+                <span class="tech-tag px-2.5 py-0.5 rounded-lg bg-secondary-container/50 text-on-secondary-container font-label text-[10px] tracking-wider">YARP</span>
+                <span class="tech-tag px-2.5 py-0.5 rounded-lg bg-tertiary-container/50 text-on-tertiary-container font-label text-[10px] tracking-wider">JWT</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ────────────────────────────────────────────────────────────────
+             ENTRY 2: Phishing Simulation Developer — TotalCybersec
+             ──────────────────────────────────────────────────────────────── -->
+        <div class="relative flex flex-col md:flex-row-reverse items-center justify-between group animate-fade-up" style="animation-delay: 0.1s">
+          <div class="hidden md:block w-[45%] text-left pl-12">
+            <span class="font-label text-xs uppercase tracking-widest text-tertiary font-medium">Dec 2022 – Present</span>
+          </div>
+
+          <div class="absolute left-4 md:left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-tertiary border-4 border-surface ring-4 ring-tertiary/10 z-10"></div>
+
+          <div class="w-full md:w-[45%] pl-12 md:pr-12 md:pl-0">
+            <div class="p-8 rounded-xl bg-surface-container-lowest border border-outline-variant/20 hover:border-tertiary/30 transition-all duration-500 shadow-lg shadow-surface-dim/30 card-hover">
+              <span class="md:hidden font-label text-[10px] uppercase tracking-widest text-tertiary mb-2 block">Dec 2022 – Present</span>
+              <h3 class="text-2xl font-bold font-headline text-on-surface mb-1">Phishing Simulation Developer</h3>
+              <p class="text-tertiary font-medium mb-4">TotalCybersec</p>
+              <ul class="space-y-3 text-sm text-on-surface-variant leading-relaxed">
+                <li class="flex gap-3 items-start">
+                  <span class="material-symbols-outlined text-tertiary text-lg shrink-0" style="font-variation-settings: 'opsz' 18;">bug_report</span>
+                  <span>Architecting automated phishing simulation campaigns to evaluate and train enterprise security teams across Grupo Salinas subsidiaries.</span>
+                </li>
+                <li class="flex gap-3 items-start">
+                  <span class="material-symbols-outlined text-tertiary text-lg shrink-0" style="font-variation-settings: 'opsz' 18;">query_stats</span>
+                  <span>Building Checkmarx vulnerability scan tooling with SQL queries that compare scans against predecessors to identify new and resolved vulnerabilities.</span>
+                </li>
+                <li class="flex gap-3 items-start">
+                  <span class="material-symbols-outlined text-tertiary text-lg shrink-0" style="font-variation-settings: 'opsz' 18;">monitoring</span>
+                  <span>Developing cybersecurity dashboards with Chart.js — reactive donut charts, historical severity trends, and proportional bar charts by scan type.</span>
+                </li>
+              </ul>
+              <div class="mt-6 flex flex-wrap gap-2">
+                <span class="tech-tag px-2.5 py-0.5 rounded-lg bg-tertiary-container/50 text-on-tertiary-container font-label text-[10px] tracking-wider">Checkmarx</span>
+                <span class="tech-tag px-2.5 py-0.5 rounded-lg bg-tertiary-container/50 text-on-tertiary-container font-label text-[10px] tracking-wider">Chart.js</span>
+                <span class="tech-tag px-2.5 py-0.5 rounded-lg bg-tertiary-container/50 text-on-tertiary-container font-label text-[10px] tracking-wider">SQL</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ────────────────────────────────────────────────────────────────
+             ENTRY 3: Design Analyst — Bright
+             ──────────────────────────────────────────────────────────────── -->
+        <div class="relative flex flex-col md:flex-row items-center justify-between group animate-fade-up" style="animation-delay: 0.2s">
+          <div class="hidden md:block w-[45%] text-right pr-12">
+            <span class="font-label text-xs uppercase tracking-widest text-on-surface-variant font-medium">Feb 2021 – Dec 2022</span>
+          </div>
+
+          <div class="absolute left-4 md:left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-outline border-4 border-surface ring-4 ring-outline/10 z-10"></div>
+
+          <div class="w-full md:w-[45%] pl-12 md:pl-12">
+            <div class="p-8 rounded-xl bg-surface-container border border-outline-variant/15 hover:border-on-surface-variant/30 transition-all duration-500 card-hover">
+              <span class="md:hidden font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-2 block">Feb 2021 – Dec 2022</span>
+              <h3 class="text-2xl font-bold font-headline text-on-surface mb-1">Design Analyst</h3>
+              <p class="text-on-surface-variant font-medium mb-4">Bright</p>
+              <ul class="space-y-3 text-sm text-on-surface-variant leading-relaxed">
+                <li class="flex gap-3 items-start">
+                  <span class="material-symbols-outlined text-on-surface-variant text-lg shrink-0" style="font-variation-settings: 'opsz' 18;">architecture</span>
+                  <span>Bridging the gap between engineering and design for solar energy management software.</span>
+                </li>
+                <li class="flex gap-3 items-start">
+                  <span class="material-symbols-outlined text-on-surface-variant text-lg shrink-0" style="font-variation-settings: 'opsz' 18;">grid_view</span>
+                  <span>Standardizing component libraries and optimizing user journey flows for field operators.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- ────────────────────────────────────────────────────────────────
+             ENTRY 4: Intern — Bright
+             ──────────────────────────────────────────────────────────────── -->
+        <div class="relative flex flex-col md:flex-row-reverse items-center justify-between group animate-fade-up" style="animation-delay: 0.3s">
+          <div class="hidden md:block w-[45%] text-left pl-12">
+            <span class="font-label text-xs uppercase tracking-widest text-on-surface-variant font-medium">Oct 2020 – Feb 2021</span>
+          </div>
+
+          <div class="absolute left-4 md:left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-outline/50 border-4 border-surface ring-4 ring-outline/5 z-10"></div>
+
+          <div class="w-full md:w-[45%] pl-12 md:pr-12 md:pl-0">
+            <div class="p-8 rounded-xl bg-surface-container border border-outline-variant/15 hover:border-on-surface-variant/30 transition-all duration-500 card-hover">
+              <span class="md:hidden font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-2 block">Oct 2020 – Feb 2021</span>
+              <h3 class="text-2xl font-bold font-headline text-on-surface/80 mb-1">Operations &amp; Maintenance Intern</h3>
+              <p class="text-on-surface-variant font-medium mb-4">Bright</p>
+              <ul class="space-y-3 text-sm text-on-surface-variant/80 leading-relaxed">
+                <li class="flex gap-3 items-start">
+                  <span class="material-symbols-outlined text-on-surface-variant text-lg shrink-0" style="font-variation-settings: 'opsz' 18;">settings_suggest</span>
+                  <span>Assisted in monitoring system performance and coordinating maintenance workflows for solar installations.</span>
+                </li>
+                <li class="flex gap-3 items-start">
+                  <span class="material-symbols-outlined text-on-surface-variant text-lg shrink-0" style="font-variation-settings: 'opsz' 18;">description</span>
+                  <span>Documented operational procedures to improve team onboarding and troubleshooting efficiency.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ==================================================================
+         BOTTOM BENTO — CTA SECTION
+         ================================================================== -->
+    <section class="mt-40 grid grid-cols-1 md:grid-cols-2 gap-8 animate-fade-up" style="animation-delay: 0.4s">
+
+      <!-- Technical Arsenal -->
+      <div class="p-10 rounded-xl bg-surface-container border border-outline-variant/20 flex flex-col justify-between overflow-hidden relative group card-hover">
+        <div class="relative z-10">
+          <h4 class="text-2xl font-bold font-headline mb-2 text-on-surface">Technical Arsenal</h4>
+          <p class="text-on-surface-variant mb-6">Expertise in building resilient enterprise architectures.</p>
+          <div class="flex flex-wrap gap-2">
+            <span class="tech-tag px-3 py-1 bg-secondary-container/50 text-on-secondary-container rounded-full text-xs font-label tracking-wider">.NET 10 / C#</span>
+            <span class="tech-tag px-3 py-1 bg-secondary-container/50 text-on-secondary-container rounded-full text-xs font-label tracking-wider">Oracle PL/SQL</span>
+            <span class="tech-tag px-3 py-1 bg-secondary-container/50 text-on-secondary-container rounded-full text-xs font-label tracking-wider">Vanilla JS</span>
+            <span class="tech-tag px-3 py-1 bg-tertiary-container/50 text-on-tertiary-container rounded-full text-xs font-label tracking-wider">Cybersecurity</span>
+            <span class="tech-tag px-3 py-1 bg-secondary-container/50 text-on-secondary-container rounded-full text-xs font-label tracking-wider">Web Components</span>
+            <span class="tech-tag px-3 py-1 bg-secondary-container/50 text-on-secondary-container rounded-full text-xs font-label tracking-wider">PostgreSQL</span>
+          </div>
+        </div>
+        <div class="absolute -right-12 -bottom-12 opacity-5 group-hover:opacity-10 transition-opacity duration-700 text-on-surface">
+          <span class="material-symbols-outlined text-[160px]">developer_mode</span>
+        </div>
+      </div>
+
+      <!-- Work With Me CTA -->
+      <div class="p-10 rounded-xl bg-primary text-on-primary flex flex-col justify-between group overflow-hidden relative card-hover">
+        <div class="relative z-10">
+          <h4 class="text-2xl font-bold font-headline mb-2">Work With Me</h4>
+          <p class="text-on-primary/80 mb-6">Looking for a fullstack developer with a security-first mindset and enterprise migration experience?</p>
+          <a class="inline-flex items-center gap-2 font-bold uppercase tracking-widest text-xs py-3 px-6 bg-on-primary text-primary rounded-lg hover:opacity-90 transition-all duration-300" href="./index.html#contact">
+            Get In Touch
+            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+          </a>
+        </div>
+        <div class="absolute -right-8 -top-8 text-on-primary/10 group-hover:scale-110 transition-transform duration-1000">
+          <span class="material-symbols-outlined text-[200px]" style="font-variation-settings: 'FILL' 1;">send</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ====================================================================
+       FOOTER
+       ==================================================================== -->
+  <footer class="bg-surface-container-high w-full py-12 border-t border-outline-variant/20">
+    <div class="flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto px-6 gap-4">
+      <div class="font-label text-xs uppercase tracking-widest text-on-surface-variant">
+        © 2026 Brian Suvias Salazar
+      </div>
+      <div class="flex items-center gap-8">
+        <a class="font-label text-xs uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors link-underline" href="#">LinkedIn</a>
+        <a class="font-label text-xs uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors link-underline" href="#">GitHub</a>
+        <a class="font-label text-xs uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors link-underline" href="#">Email</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Theme Toggle JS (idéntico al index.html) -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      "use strict";
+
+      var STORAGE_KEY = "theme";
+      var TRANSITION_CLASS = "theme-transition";
+      var TRANSITION_DURATION = 300;
+
+      var toggleButton = null;
+      var themeIcon = null;
+
+      try {
+        toggleButton = document.getElementById("theme-toggle");
+        themeIcon = document.getElementById("theme-icon");
+      } catch (domError) {
+        console.error("[Theme] Error al obtener elementos del DOM:", domError);
+        return;
+      }
+
+      if (!toggleButton || !themeIcon) {
+        console.warn("[Theme] Elementos #theme-toggle o #theme-icon no encontrados.");
+        return;
+      }
+
+      function isDarkMode() {
+        try {
+          return document.documentElement.classList.contains("dark");
+        } catch (error) {
+          console.error("[Theme] Error al verificar clase dark:", error);
+          return false;
+        }
+      }
+
+      function updateIcon() {
+        try {
+          themeIcon.textContent = isDarkMode() ? "dark_mode" : "light_mode";
+          themeIcon.classList.remove("animate-icon-rotate");
+          void themeIcon.offsetWidth;
+          themeIcon.classList.add("animate-icon-rotate");
+        } catch (error) {
+          console.error("[Theme] Error al actualizar icono:", error);
+        }
+      }
+
+      function savePreference(theme) {
+        try {
+          localStorage.setItem(STORAGE_KEY, theme);
+        } catch (e) {
+          console.warn("[Theme] No se pudo guardar en localStorage:", e.message);
+        }
+      }
+
+      function addThemeTransition() {
+        try {
+          document.documentElement.classList.add(TRANSITION_CLASS);
+          setTimeout(function () {
+            try {
+              document.documentElement.classList.remove(TRANSITION_CLASS);
+            } catch (e) {
+              console.error("[Theme] Error al remover transición:", e);
+            }
+          }, TRANSITION_DURATION);
+        } catch (error) {
+          console.error("[Theme] Error al agregar transición:", error);
+        }
+      }
+
+      updateIcon();
+
+      try {
+        toggleButton.addEventListener("click", function () {
+          try {
+            addThemeTransition();
+            document.documentElement.classList.toggle("dark");
+            var newTheme = isDarkMode() ? "dark" : "light";
+            updateIcon();
+            savePreference(newTheme);
+            try {
+              toggleButton.setAttribute("aria-label",
+                isDarkMode() ? "Switch to light theme" : "Switch to dark theme"
+              );
+            } catch (e) {
+              console.warn("[Theme] Error al actualizar aria-label:", e.message);
+            }
+          } catch (toggleError) {
+            console.error("[Theme] Error durante el toggle:", toggleError);
+          }
+        });
+      } catch (listenerError) {
+        console.error("[Theme] Error al registrar event listener:", listenerError);
+      }
+
+      try {
+        var mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+        mediaQuery.addEventListener("change", function (event) {
+          try {
+            var saved = null;
+            try { saved = localStorage.getItem(STORAGE_KEY); } catch (e) {}
+            if (saved !== null) return;
+
+            addThemeTransition();
+            if (event.matches) {
+              document.documentElement.classList.add("dark");
+            } else {
+              document.documentElement.classList.remove("dark");
+            }
+            updateIcon();
+          } catch (error) {
+            console.error("[Theme] Error al reaccionar a cambio del SO:", error);
+          }
+        });
+      } catch (mediaError) {
+        console.warn("[Theme] matchMedia.addEventListener no disponible:", mediaError.message);
+      }
+    });
+  </script>
+
+</body>
+</html>

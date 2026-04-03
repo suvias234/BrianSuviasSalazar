@@ -1,0 +1,426 @@
+/*
+  ============================================================================
+  PORTAFOLIO — HOJA DE ESTILOS PRINCIPAL (DUAL THEME)
+  ============================================================================
+  
+  CÓMO FUNCIONA EL SISTEMA DE TEMAS:
+  
+  1. Los colores se definen como VARIABLES CSS con valores RGB (sin wrapper).
+     Ejemplo: --color-primary: 212 102 10;
+  
+  2. Tailwind los consume así en su config:
+     "primary": "rgb(var(--color-primary) / <alpha-value>)"
+  
+  3. Esto permite que Tailwind aplique opacidad automáticamente:
+     bg-primary     → rgb(212 102 10 / 1)      → naranja sólido
+     bg-primary/20  → rgb(212 102 10 / 0.2)     → naranja al 20%
+  
+  4. Al agregar class="dark" al <html>, las variables cambian
+     y TODO el sitio se actualiza sin tocar el HTML.
+  
+  ¿POR QUÉ RGB EN VEZ DE HEX?
+  Tailwind necesita descomponer el color en canales para el 
+  sufijo /XX. Con HEX bg-primary/20 NO funciona. Con RGB sí.
+  
+  PARA AGREGAR UN COLOR NUEVO:
+  1. Define la variable en :root Y en html.dark
+  2. Agrega la línea en tailwind.config con formato rgb(var(...))
+  3. Úsalo en el HTML como bg-[tu-color], text-[tu-color], etc.
+  ============================================================================
+*/
+
+
+/* ==========================================================================
+   TEMA CLARO (DEFAULT)
+   ==========================================================================
+   Valores RGB separados por espacio: 250 246 240 = #faf6f0
+   
+   CONVERTIR HEX → RGB (consola del navegador):
+     let hex = "#faf6f0";
+     let [r, g, b] = hex.match(/\w{2}/g).map(x => parseInt(x, 16));
+     console.log(`${r} ${g} ${b}`);
+   ========================================================================== */
+
+:root {
+  /* ── Fondos ───────────────────────────────────────────────────────────── */
+  --color-surface:                  250 246 240;
+  --color-surface-dim:              243 237 228;
+  --color-surface-bright:           255 253 248;
+  --color-surface-container-lowest: 255 255 255;
+  --color-surface-container-low:    254 249 242;
+  --color-surface-container:        247 240 230;
+  --color-surface-container-high:   240 232 219;
+  --color-surface-container-highest:232 223 208;
+  --color-surface-variant:          237 228 212;
+
+  /* ── Texto ────────────────────────────────────────────────────────────── */
+  --color-on-surface:               45  36  24;
+  --color-on-surface-variant:       107 93  77;
+  --color-on-background:            45  36  24;
+  --color-background:               250 246 240;
+
+  /* ── Primario: Naranja ────────────────────────────────────────────────── */
+  --color-primary:                  212 102 10;
+  --color-on-primary:               255 255 255;
+  --color-primary-container:        255 189 122;
+  --color-on-primary-container:     92  45  0;
+  --color-primary-fixed:            255 220 186;
+  --color-primary-fixed-dim:        212 102 10;
+  --color-on-primary-fixed:         58  28  0;
+  --color-on-primary-fixed-variant: 122 61  0;
+  --color-inverse-primary:          255 183 124;
+
+  /* ── Secundario: Verde ────────────────────────────────────────────────── */
+  --color-secondary:                74  124 89;
+  --color-on-secondary:             255 255 255;
+  --color-secondary-container:      204 232 212;
+  --color-on-secondary-container:   45  90  58;
+  --color-secondary-fixed:          212 240 220;
+  --color-secondary-fixed-dim:      74  124 89;
+  --color-on-secondary-fixed:       13  58  28;
+  --color-on-secondary-fixed-variant:45 90  58;
+
+  /* ── Terciario: Amarillo ──────────────────────────────────────────────── */
+  --color-tertiary:                 196 154 32;
+  --color-on-tertiary:              255 255 255;
+  --color-tertiary-container:       254 243 199;
+  --color-on-tertiary-container:    107 82  0;
+  --color-tertiary-fixed:           255 248 225;
+  --color-tertiary-fixed-dim:       196 154 32;
+  --color-on-tertiary-fixed:        38  26  0;
+  --color-on-tertiary-fixed-variant:92  67  0;
+
+  /* ── Bordes ───────────────────────────────────────────────────────────── */
+  --color-outline:                  163 148 132;
+  --color-outline-variant:          212 201 184;
+
+  /* ── Inversión ────────────────────────────────────────────────────────── */
+  --color-inverse-surface:          54  47  37;
+  --color-inverse-on-surface:       248 240 230;
+
+  /* ── Errores ──────────────────────────────────────────────────────────── */
+  --color-error:                    186 26  26;
+  --color-on-error:                 255 255 255;
+  --color-error-container:          255 218 214;
+  --color-on-error-container:       65  0   2;
+
+  /* ── Tinte ────────────────────────────────────────────────────────────── */
+  --color-surface-tint:             212 102 10;
+
+  /* ── Colores fijos para rgba() en gradientes (NO cambian con tema) ───── */
+  --accent-primary-rgb:   212, 102, 10;
+  --accent-secondary-rgb: 74, 124, 89;
+  --accent-tertiary-rgb:  196, 154, 32;
+}
+
+
+/* ==========================================================================
+   TEMA OSCURO
+   ==========================================================================
+   Tonos marrón/carbón cálidos (no azul navy frío).
+   
+   REGLA M3 DARK MODE:
+   - surface → oscuro    |  on-surface → claro
+   - primary se ACLARA   |  containers se OSCURECEN
+   ========================================================================== */
+
+html.dark {
+  /* ── Fondos ───────────────────────────────────────────────────────────── */
+  --color-surface:                  26  21  15;
+  --color-surface-dim:              20  16  10;
+  --color-surface-bright:           50  43  33;
+  --color-surface-container-lowest: 14  11  6;
+  --color-surface-container-low:    33  27  20;
+  --color-surface-container:        40  34  26;
+  --color-surface-container-high:   51  44  35;
+  --color-surface-container-highest:63  55  45;
+  --color-surface-variant:          63  55  45;
+
+  /* ── Texto ────────────────────────────────────────────────────────────── */
+  --color-on-surface:               237 228 212;
+  --color-on-surface-variant:       168 152 130;
+  --color-on-background:            237 228 212;
+  --color-background:               26  21  15;
+
+  /* ── Primario: Naranja CLARO ──────────────────────────────────────────── */
+  --color-primary:                  255 183 124;
+  --color-on-primary:               92  45  0;
+  --color-primary-container:        122 61  0;
+  --color-on-primary-container:     255 220 186;
+  --color-primary-fixed:            255 220 186;
+  --color-primary-fixed-dim:        255 183 124;
+  --color-on-primary-fixed:         58  28  0;
+  --color-on-primary-fixed-variant: 122 61  0;
+  --color-inverse-primary:          212 102 10;
+
+  /* ── Secundario: Verde CLARO ──────────────────────────────────────────── */
+  --color-secondary:                140 196 157;
+  --color-on-secondary:             13  58  28;
+  --color-secondary-container:      45  90  58;
+  --color-on-secondary-container:   204 232 212;
+  --color-secondary-fixed:          212 240 220;
+  --color-secondary-fixed-dim:      140 196 157;
+  --color-on-secondary-fixed:       13  58  28;
+  --color-on-secondary-fixed-variant:45 90  58;
+
+  /* ── Terciario: Amarillo CLARO ────────────────────────────────────────── */
+  --color-tertiary:                 232 196 74;
+  --color-on-tertiary:              58  45  0;
+  --color-tertiary-container:       92  67  0;
+  --color-on-tertiary-container:    254 243 199;
+  --color-tertiary-fixed:           255 248 225;
+  --color-tertiary-fixed-dim:       232 196 74;
+  --color-on-tertiary-fixed:        38  26  0;
+  --color-on-tertiary-fixed-variant:92  67  0;
+
+  /* ── Bordes ───────────────────────────────────────────────────────────── */
+  --color-outline:                  138 125 109;
+  --color-outline-variant:          74  66  56;
+
+  /* ── Inversión ────────────────────────────────────────────────────────── */
+  --color-inverse-surface:          237 228 212;
+  --color-inverse-on-surface:       45  36  24;
+
+  /* ── Errores ──────────────────────────────────────────────────────────── */
+  --color-error:                    255 180 171;
+  --color-on-error:                 105 0   5;
+  --color-error-container:          147 0   10;
+  --color-on-error-container:       255 218 214;
+
+  /* ── Tinte ────────────────────────────────────────────────────────────── */
+  --color-surface-tint:             255 183 124;
+
+  /* ── Colores fijos decoración ─────────────────────────────────────────── */
+  --accent-primary-rgb:   255, 183, 124;
+  --accent-secondary-rgb: 140, 196, 157;
+  --accent-tertiary-rgb:  232, 196, 74;
+}
+
+
+/* ==========================================================================
+   TRANSICIÓN DE TEMA
+   ==========================================================================
+   Se agrega temporalmente al <html> durante el toggle para que el
+   cambio de colores sea suave (300ms). Se remueve después para no
+   interferir con otras transiciones.
+   ========================================================================== */
+
+html.theme-transition,
+html.theme-transition *,
+html.theme-transition *::before,
+html.theme-transition *::after {
+  transition: background-color 300ms ease,
+              color 300ms ease,
+              border-color 300ms ease,
+              box-shadow 300ms ease !important;
+}
+
+
+/* ==========================================================================
+   RESET & BASE
+   ========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+/* ==========================================================================
+   TIPOGRAFÍA
+   ========================================================================== */
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+}
+.icon-filled {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+
+/* ==========================================================================
+   FONDOS DECORATIVOS
+   ========================================================================== */
+
+.hero-gradient {
+  background:
+    radial-gradient(
+      ellipse 80% 60% at 50% 45%,
+      rgba(var(--accent-primary-rgb), 0.05) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(var(--accent-secondary-rgb), 0.04) 0%,
+      transparent 40%
+    );
+}
+
+.metrics-gradient {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(var(--accent-tertiary-rgb), 0.03) 0%,
+      transparent 50%,
+      rgba(var(--accent-secondary-rgb), 0.03) 100%
+    );
+}
+
+
+/* ==========================================================================
+   NAVEGACIÓN
+   ========================================================================== */
+
+.glass-nav {
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+}
+
+
+/* ==========================================================================
+   ANIMACIONES
+   ========================================================================== */
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up {
+  animation: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out both;
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.animate-scale-in {
+  animation: scale-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes slide-in-left {
+  from { opacity: 0; transform: translateX(-20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.animate-slide-left {
+  animation: slide-in-left 0.5s ease-out both;
+}
+
+@keyframes gentle-bounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(6px); }
+}
+.animate-gentle-bounce {
+  animation: gentle-bounce 2.5s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(var(--accent-secondary-rgb), 0.4);
+  }
+  50% {
+    opacity: 0.8;
+    box-shadow: 0 0 0 4px rgba(var(--accent-secondary-rgb), 0);
+  }
+}
+.animate-pulse-glow {
+  animation: pulse-glow 2.5s ease-in-out infinite;
+}
+
+/* ── Rotación del icono de tema ─────────────────────────────────────────── */
+@keyframes icon-rotate-in {
+  from { transform: rotate(-90deg) scale(0.5); opacity: 0; }
+  to   { transform: rotate(0deg) scale(1); opacity: 1; }
+}
+.animate-icon-rotate {
+  animation: icon-rotate-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+
+/* ==========================================================================
+   COMPONENTES
+   ========================================================================== */
+
+.metric-item { position: relative; }
+.metric-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  border-radius: 3px;
+  opacity: 0.5;
+  transition: opacity 0.3s ease, height 0.3s ease;
+}
+.metric-item:hover::before { opacity: 1; height: 80%; }
+
+.metric-item:nth-child(1)::before { background: rgba(var(--accent-primary-rgb), 1); }
+.metric-item:nth-child(2)::before { background: rgba(var(--accent-secondary-rgb), 1); }
+.metric-item:nth-child(3)::before { background: rgba(var(--accent-tertiary-rgb), 1); }
+.metric-item:nth-child(4)::before { background: rgba(var(--accent-primary-rgb), 1); }
+
+.card-hover {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.card-hover:hover { transform: translateY(-2px); }
+
+.tech-tag { transition: background-color 0.2s ease, border-color 0.2s ease; }
+.tech-tag:hover { filter: brightness(0.95); }
+html.dark .tech-tag:hover { filter: brightness(1.1); }
+
+.link-underline { position: relative; display: inline-block; }
+.link-underline::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 1.5px;
+  background: rgba(var(--accent-primary-rgb), 1);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.link-underline:hover::after { transform: scaleX(1); }
+
+
+/* ==========================================================================
+   UTILIDADES
+   ========================================================================== */
+
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+
+.text-gradient {
+  background: linear-gradient(135deg, rgba(var(--accent-primary-rgb), 1) 0%, rgba(var(--accent-tertiary-rgb), 1) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.divider-gradient {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgb(var(--color-outline-variant)) 20%,
+    rgb(var(--color-outline-variant)) 80%,
+    transparent
+  );
+}

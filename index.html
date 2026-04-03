@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+  <!-- Fuentes -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+  <!-- Estilos personalizados (temas, animaciones, componentes) -->
+  <link href="./site.css" rel="stylesheet" />
+
+  <!--
+    =========================================================================
+    CRITICAL: DETECCIÓN DE TEMA ANTES DEL PRIMER PAINT
+    =========================================================================
+    Este script DEBE estar inline y en el <head> (antes del body).
+    
+    ¿POR QUÉ?
+    Si lo ponemos al final del body o en un archivo externo, el navegador
+    primero renderiza la página en tema claro y DESPUÉS aplica el oscuro,
+    causando un "flash" visible (FOUC — Flash Of Unstyled Content).
+    
+    Al estar en el <head>, se ejecuta ANTES de que el navegador pinte
+    cualquier pixel, así el tema correcto se aplica desde el inicio.
+    
+    FLUJO:
+    1. Lee localStorage → obtiene "theme" ("dark" | "light" | null)
+    2. Si null, revisa prefers-color-scheme del SO
+    3. Aplica class="dark" al <html> si corresponde
+    ========================================================================= 
+  -->
+  <script>
+    (function initThemeBeforePaint() {
+      "use strict";
+      try {
+        var STORAGE_KEY = "theme";
+        var savedTheme = null;
+
+        // Intenta leer del localStorage
+        try {
+          savedTheme = localStorage.getItem(STORAGE_KEY);
+        } catch (storageError) {
+          // localStorage puede no estar disponible (iframe sandboxed,
+          // modo privado en Safari antiguo, etc.)
+          console.warn("[Theme] localStorage no disponible:", storageError.message);
+        }
+
+        // Determina si debe ser dark
+        var shouldBeDark = false;
+
+        if (savedTheme === "dark") {
+          shouldBeDark = true;
+        } else if (savedTheme === "light") {
+          shouldBeDark = false;
+        } else {
+          // No hay preferencia guardada → usa la del sistema operativo
+          // matchMedia puede no existir en navegadores muy antiguos
+          try {
+            shouldBeDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+          } catch (mediaError) {
+            console.warn("[Theme] matchMedia no disponible:", mediaError.message);
+          }
+        }
+
+        // Aplica la clase ANTES del primer paint
+        if (shouldBeDark) {
+          document.documentElement.classList.add("dark");
+        }
+      } catch (error) {
+        console.error("[Theme] Error en inicialización:", error);
+        // En caso de error total, el tema claro se usa por defecto (no crash)
+      }
+    })();
+  </script>
+
+  <!--
+    =========================================================================
+    TAILWIND CONFIG — Colores vía CSS Custom Properties
+    =========================================================================
+    FORMATO: "rgb(var(--color-X) / <alpha-value>)"
+    
+    ¿Qué es <alpha-value>?
+    Es un placeholder que Tailwind reemplaza automáticamente:
+      - bg-primary      → rgb(var(--color-primary) / 1)
+      - bg-primary/20   → rgb(var(--color-primary) / 0.2)
+    
+    Los valores reales de cada variable están en styles.css,
+    definidos en :root (light) y html.dark (dark).
+    =========================================================================
+  -->
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface":                    "rgb(var(--color-surface) / <alpha-value>)",
+            "surface-dim":                "rgb(var(--color-surface-dim) / <alpha-value>)",
+            "surface-bright":             "rgb(var(--color-surface-bright) / <alpha-value>)",
+            "surface-container-lowest":   "rgb(var(--color-surface-container-lowest) / <alpha-value>)",
+            "surface-container-low":      "rgb(var(--color-surface-container-low) / <alpha-value>)",
+            "surface-container":          "rgb(var(--color-surface-container) / <alpha-value>)",
+            "surface-container-high":     "rgb(var(--color-surface-container-high) / <alpha-value>)",
+            "surface-container-highest":  "rgb(var(--color-surface-container-highest) / <alpha-value>)",
+            "surface-variant":            "rgb(var(--color-surface-variant) / <alpha-value>)",
+
+            "on-surface":                 "rgb(var(--color-on-surface) / <alpha-value>)",
+            "on-surface-variant":         "rgb(var(--color-on-surface-variant) / <alpha-value>)",
+            "on-background":              "rgb(var(--color-on-background) / <alpha-value>)",
+            "background":                 "rgb(var(--color-background) / <alpha-value>)",
+
+            "primary":                    "rgb(var(--color-primary) / <alpha-value>)",
+            "on-primary":                 "rgb(var(--color-on-primary) / <alpha-value>)",
+            "primary-container":          "rgb(var(--color-primary-container) / <alpha-value>)",
+            "on-primary-container":       "rgb(var(--color-on-primary-container) / <alpha-value>)",
+            "primary-fixed":              "rgb(var(--color-primary-fixed) / <alpha-value>)",
+            "primary-fixed-dim":          "rgb(var(--color-primary-fixed-dim) / <alpha-value>)",
+            "on-primary-fixed":           "rgb(var(--color-on-primary-fixed) / <alpha-value>)",
+            "on-primary-fixed-variant":   "rgb(var(--color-on-primary-fixed-variant) / <alpha-value>)",
+            "inverse-primary":            "rgb(var(--color-inverse-primary) / <alpha-value>)",
+
+            "secondary":                  "rgb(var(--color-secondary) / <alpha-value>)",
+            "on-secondary":               "rgb(var(--color-on-secondary) / <alpha-value>)",
+            "secondary-container":        "rgb(var(--color-secondary-container) / <alpha-value>)",
+            "on-secondary-container":     "rgb(var(--color-on-secondary-container) / <alpha-value>)",
+            "secondary-fixed":            "rgb(var(--color-secondary-fixed) / <alpha-value>)",
+            "secondary-fixed-dim":        "rgb(var(--color-secondary-fixed-dim) / <alpha-value>)",
+            "on-secondary-fixed":         "rgb(var(--color-on-secondary-fixed) / <alpha-value>)",
+            "on-secondary-fixed-variant": "rgb(var(--color-on-secondary-fixed-variant) / <alpha-value>)",
+
+            "tertiary":                   "rgb(var(--color-tertiary) / <alpha-value>)",
+            "on-tertiary":                "rgb(var(--color-on-tertiary) / <alpha-value>)",
+            "tertiary-container":         "rgb(var(--color-tertiary-container) / <alpha-value>)",
+            "on-tertiary-container":      "rgb(var(--color-on-tertiary-container) / <alpha-value>)",
+            "tertiary-fixed":             "rgb(var(--color-tertiary-fixed) / <alpha-value>)",
+            "tertiary-fixed-dim":         "rgb(var(--color-tertiary-fixed-dim) / <alpha-value>)",
+            "on-tertiary-fixed":          "rgb(var(--color-on-tertiary-fixed) / <alpha-value>)",
+            "on-tertiary-fixed-variant":  "rgb(var(--color-on-tertiary-fixed-variant) / <alpha-value>)",
+
+            "outline":                    "rgb(var(--color-outline) / <alpha-value>)",
+            "outline-variant":            "rgb(var(--color-outline-variant) / <alpha-value>)",
+
+            "inverse-surface":            "rgb(var(--color-inverse-surface) / <alpha-value>)",
+            "inverse-on-surface":         "rgb(var(--color-inverse-on-surface) / <alpha-value>)",
+
+            "error":                      "rgb(var(--color-error) / <alpha-value>)",
+            "on-error":                   "rgb(var(--color-on-error) / <alpha-value>)",
+            "error-container":            "rgb(var(--color-error-container) / <alpha-value>)",
+            "on-error-container":         "rgb(var(--color-on-error-container) / <alpha-value>)",
+
+            "surface-tint":               "rgb(var(--color-surface-tint) / <alpha-value>)",
+          },
+          fontFamily: {
+            "headline": ["Playfair Display", "serif"],
+            "body":     ["DM Sans", "sans-serif"],
+            "label":    ["JetBrains Mono", "monospace"],
+          },
+          borderRadius: {
+            DEFAULT: "0.375rem",
+            lg:      "0.625rem",
+            xl:      "1rem",
+            full:    "1.25rem",
+          },
+        },
+      },
+    };
+  </script>
+</head>
+
+<body class="bg-surface text-on-surface font-body selection:bg-primary/20 selection:text-primary">
+
+  <!-- ====================================================================
+       NAVBAR
+       ==================================================================== -->
+  <nav class="fixed top-0 w-full z-50 bg-surface/85 glass-nav border-b border-outline-variant/20">
+    <div class="flex justify-between items-center max-w-7xl mx-auto px-6 h-16">
+      <div class="text-xl font-bold tracking-tighter font-headline text-on-surface">
+        Brian Suvias
+      </div>
+
+      <!-- Desktop Navigation -->
+      <div class="hidden md:flex items-center gap-8 font-body text-sm tracking-tight">
+        <a class="text-on-surface-variant hover:text-primary transition-colors link-underline" href="./proyectos.html">Projects</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors link-underline" href="./experiencia.html">Experience</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors link-underline" href="./skills.html">Skills</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors link-underline" href="./contacto.html">Contact</a>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <!--
+          THEME TOGGLE BUTTON
+          - id="theme-toggle" → referenciado por el JS
+          - aria-label → accesibilidad (lectores de pantalla)
+          - El icono interior se cambia dinámicamente por JS
+        -->
+        <button
+          id="theme-toggle"
+          aria-label="Toggle theme"
+          class="p-2 hover:bg-surface-container-high rounded-lg transition-all duration-300 text-on-surface-variant hover:text-primary"
+        >
+          <span id="theme-icon" class="material-symbols-outlined">light_mode</span>
+        </button>
+        <button class="p-2 hover:bg-surface-container-high rounded-lg transition-all duration-300 text-on-surface-variant hover:text-primary">
+          <span class="material-symbols-outlined">language</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ====================================================================
+       MAIN CONTENT
+       ==================================================================== -->
+  <main class="relative overflow-hidden">
+
+    <!-- HERO SECTION -->
+    <section class="relative min-h-screen flex flex-col items-center justify-center pt-16 px-6 hero-gradient">
+      <div class="absolute inset-0 z-0 pointer-events-none">
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/8 rounded-full blur-[128px]"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-64 h-64 bg-secondary-container rounded-full blur-[96px] opacity-40"></div>
+        <div class="absolute top-1/3 right-1/3 w-48 h-48 bg-tertiary-container rounded-full blur-[80px] opacity-30"></div>
+      </div>
+
+      <div class="relative z-10 max-w-5xl mx-auto text-center">
+        <!-- Tagline Badge -->
+        <div class="mb-8 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface-container-lowest border border-outline-variant/30 shadow-sm animate-scale-in">
+          <span class="w-2 h-2 rounded-full bg-secondary animate-pulse-glow"></span>
+          <span class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">
+            Available for new projects
+          </span>
+        </div>
+
+        <h1 class="font-headline text-5xl md:text-7xl font-extrabold tracking-tight mb-4 text-on-surface animate-fade-up">
+          Brian Suvias Salazar
+        </h1>
+
+        <h2 class="font-label text-primary text-lg md:text-xl mb-6 tracking-tight animate-fade-up" style="animation-delay: 0.08s">
+          Fullstack Web Developer · Backend &amp; API Specialist
+        </h2>
+
+        <p class="max-w-2xl mx-auto text-on-surface-variant text-lg md:text-xl leading-relaxed mb-12 animate-fade-up" style="animation-delay: 0.16s">
+          Modernizing enterprise legacy systems into high-performance APIs
+          with .NET, Oracle PL/SQL, and security-first architecture.
+        </p>
+
+        <!-- CTAs -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-up" style="animation-delay: 0.24s">
+          <a href="./proyectos.html" class="group relative px-8 py-3.5 bg-primary text-on-primary font-semibold rounded-lg hover:shadow-[0_0_30px_-5px_rgba(var(--accent-primary-rgb),0.35)] transition-all duration-300 hover:brightness-110 inline-flex items-center gap-2">
+            View Projects
+            <span class="material-symbols-outlined text-lg group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+          </a>
+          <a href="#contact" class="px-8 py-3.5 bg-surface-container text-on-surface font-medium rounded-lg border border-outline-variant/30 hover:bg-surface-container-high hover:border-primary/30 transition-all duration-300 inline-flex items-center gap-2">
+            <span class="material-symbols-outlined text-lg">mail</span>
+            Get in Touch
+          </a>
+        </div>
+      </div>
+
+      <!-- Scroll Indicator -->
+      <div class="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40 animate-gentle-bounce">
+        <span class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Scroll</span>
+        <div class="w-px h-12 bg-gradient-to-b from-primary/50 to-transparent"></div>
+      </div>
+    </section>
+
+    <!-- METRICS SECTION -->
+    <section class="max-w-7xl mx-auto px-6 py-16 metrics-gradient">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+        <div class="metric-item pl-5 animate-fade-up">
+          <div class="font-headline text-3xl md:text-4xl font-extrabold text-primary mb-1">+5</div>
+          <div class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">Years of<br/>Experience</div>
+        </div>
+        <div class="metric-item pl-5 animate-fade-up" style="animation-delay: 0.1s">
+          <div class="font-headline text-3xl md:text-4xl font-extrabold text-secondary mb-1">.NET</div>
+          <div class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">Core Stack<br/>.NET 10 + C#</div>
+        </div>
+        <div class="metric-item pl-5 animate-fade-up" style="animation-delay: 0.2s">
+          <div class="font-headline text-3xl md:text-4xl font-extrabold text-tertiary mb-1">Oracle</div>
+          <div class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">PL/SQL &amp;<br/>Enterprise DB</div>
+        </div>
+        <div class="metric-item pl-5 animate-fade-up" style="animation-delay: 0.3s">
+          <div class="font-headline text-3xl md:text-4xl font-extrabold text-primary mb-1">IPN</div>
+          <div class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">Mechatronics<br/>Engineering</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Divider -->
+    <div class="max-w-7xl mx-auto px-6"><div class="divider-gradient"></div></div>
+
+    <!-- BENTO GRID -->
+    <section class="max-w-7xl mx-auto px-6 py-24">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <!-- Card 1: Legacy Modernization -->
+        <div class="md:col-span-2 p-8 rounded-xl bg-surface-container-lowest border border-outline-variant/20 group card-hover hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 animate-fade-up">
+          <div class="flex flex-col h-full justify-between">
+            <div>
+              <div class="font-label text-xs text-primary mb-4 tracking-wider">SYSTEM ARCHITECTURE</div>
+              <h3 class="text-2xl font-bold font-headline mb-4 text-on-surface">
+                Legacy Modernization at Scale
+              </h3>
+              <p class="text-on-surface-variant max-w-lg leading-relaxed">
+                Leading the migration of enterprise platforms from .NET 4.8 WebForms
+                to .NET 10 Web API + SPA using the Strangler Fig pattern with YARP reverse proxy.
+                Designing layered C# architectures with JWT dual-auth, AES-256-CBC encryption,
+                and Oracle PL/SQL backends.
+              </p>
+            </div>
+            <div class="mt-10 flex flex-wrap gap-2.5">
+              <span class="tech-tag px-3 py-1 rounded-lg bg-secondary-container/50 text-on-secondary-container font-label text-[10px] tracking-wider">.NET 10</span>
+              <span class="tech-tag px-3 py-1 rounded-lg bg-secondary-container/50 text-on-secondary-container font-label text-[10px] tracking-wider">C#</span>
+              <span class="tech-tag px-3 py-1 rounded-lg bg-secondary-container/50 text-on-secondary-container font-label text-[10px] tracking-wider">Oracle PL/SQL</span>
+              <span class="tech-tag px-3 py-1 rounded-lg bg-secondary-container/50 text-on-secondary-container font-label text-[10px] tracking-wider">YARP</span>
+              <span class="tech-tag px-3 py-1 rounded-lg bg-secondary-container/50 text-on-secondary-container font-label text-[10px] tracking-wider">JWT</span>
+              <span class="tech-tag px-3 py-1 rounded-lg bg-tertiary-container/50 text-on-tertiary-container font-label text-[10px] tracking-wider">AES-256-CBC</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Visual -->
+        <div class="rounded-xl overflow-hidden relative aspect-square md:aspect-auto border border-outline-variant/20 group animate-fade-up" style="animation-delay: 0.1s">
+          <img alt="Coding interface" class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:scale-105 transition-transform duration-700 saturate-[0.7]"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDunsnwA4gnXhabLkmY_8Vx-85WSA1Brak3EjgBUevs6iQQepAq8YJr6RyKUtRlEN2CE9wTKgx6hob_u9yCSQZkIdNmo7diXoQS0Up1TnwG0m__nrbKafSjn9my72WFSPydn3gew82gVpPR8QC24N5FeuTwBnfnmsj-7R0Szdxb1y8PzLcv2bur1qg5I1KhFnIoB5-nFc3qGMONtOfWfXh_mK1LdKQblsm7SWzwAhJVD0Vrh3weiNJD_ssLUAGboa-09WU66ZhSriyX" />
+          <div class="absolute inset-0 bg-gradient-to-t from-surface-container via-surface-container/30 to-transparent"></div>
+          <div class="absolute bottom-6 left-6">
+            <div class="font-label text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">Current Focus</div>
+            <div class="text-sm font-label text-primary font-medium">IEECO Platform Migration</div>
+          </div>
+        </div>
+
+        <!-- Card 3: Cybersecurity -->
+        <div class="p-8 rounded-xl bg-surface-container border border-outline-variant/20 card-hover hover:border-tertiary/30 hover:shadow-lg hover:shadow-tertiary/5 transition-all duration-300 animate-fade-up" style="animation-delay: 0.2s">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-10 h-10 rounded-full bg-tertiary/10 flex items-center justify-center text-tertiary">
+              <span class="material-symbols-outlined">shield</span>
+            </div>
+            <div class="font-bold font-headline">Cybersecurity</div>
+          </div>
+          <p class="text-sm text-on-surface-variant leading-relaxed mb-5">
+            Phishing simulation development and Checkmarx vulnerability scan tooling at TotalCybersec / Grupo Salinas.
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <span class="tech-tag px-2.5 py-0.5 rounded-lg bg-tertiary-container/50 text-on-tertiary-container font-label text-[10px] tracking-wider">Checkmarx</span>
+            <span class="tech-tag px-2.5 py-0.5 rounded-lg bg-tertiary-container/50 text-on-tertiary-container font-label text-[10px] tracking-wider">Phishing Sim</span>
+          </div>
+        </div>
+
+        <!-- Card 4: Frontend -->
+        <div class="md:col-span-2 p-8 rounded-xl bg-surface-container-lowest border border-outline-variant/20 card-hover flex items-center justify-between hover:border-secondary/30 hover:shadow-lg hover:shadow-secondary/5 transition-all duration-300 animate-fade-up" style="animation-delay: 0.3s">
+          <div>
+            <h3 class="text-xl font-bold font-headline mb-2">Full SPA Architecture</h3>
+            <p class="text-sm text-on-surface-variant max-w-lg">
+              Client-side routing with vanilla JS History API, dynamic ES module imports,
+              Web Components, and event delegation patterns — no frameworks, full control.
+            </p>
+            <div class="mt-5 flex flex-wrap gap-2.5">
+              <span class="tech-tag px-3 py-1 rounded-lg bg-secondary-container/50 text-on-secondary-container font-label text-[10px] tracking-wider">Vanilla JS</span>
+              <span class="tech-tag px-3 py-1 rounded-lg bg-secondary-container/50 text-on-secondary-container font-label text-[10px] tracking-wider">Web Components</span>
+              <span class="tech-tag px-3 py-1 rounded-lg bg-secondary-container/50 text-on-secondary-container font-label text-[10px] tracking-wider">Chart.js</span>
+              <span class="tech-tag px-3 py-1 rounded-lg bg-secondary-container/50 text-on-secondary-container font-label text-[10px] tracking-wider">Bootstrap 5.3</span>
+            </div>
+          </div>
+          <div class="hidden sm:block">
+            <span class="material-symbols-outlined text-4xl text-outline-variant/50">code</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- ====================================================================
+       FOOTER
+       ==================================================================== -->
+  <footer id="contact" class="bg-surface-container-high w-full py-12 border-t border-outline-variant/20">
+    <div class="flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto px-6 gap-4">
+      <div class="font-label text-xs uppercase tracking-widest text-on-surface-variant">
+        © 2026 Brian Suvias Salazar
+      </div>
+      <div class="flex items-center gap-8">
+        <a class="font-label text-xs uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors link-underline" href="#">LinkedIn</a>
+        <a class="font-label text-xs uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors link-underline" href="#">GitHub</a>
+        <a class="font-label text-xs uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors link-underline" href="#">Email</a>
+      </div>
+    </div>
+  </footer>
+
+  <!--
+    =========================================================================
+    THEME TOGGLE — JAVASCRIPT
+    =========================================================================
+    Este script va al final del body porque necesita que el DOM esté listo
+    para encontrar el botón #theme-toggle y el icono #theme-icon.
+    
+    FLUJO:
+    1. DOMContentLoaded → sincroniza el icono con el estado actual
+    2. Click en botón → toggle class "dark" en <html>
+    3. Actualiza el icono (light_mode ↔ dark_mode)
+    4. Agrega transición temporal para suavizar el cambio
+    5. Guarda la preferencia en localStorage
+    
+    ESTRATEGIA DE ERROR:
+    - Si localStorage falla → el toggle sigue funcionando (sin persistencia)
+    - Si el botón no existe → no crashea (guard clause al inicio)
+    - Cada operación está envuelta en try-catch individual para aislar fallos
+    =========================================================================
+  -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      "use strict";
+
+      var STORAGE_KEY = "theme";
+      var TRANSITION_CLASS = "theme-transition";
+      var TRANSITION_DURATION = 300; // ms — debe coincidir con el CSS
+
+      // ── Obtener referencias al DOM ──────────────────────────────────────
+      var toggleButton = null;
+      var themeIcon = null;
+
+      try {
+        toggleButton = document.getElementById("theme-toggle");
+        themeIcon = document.getElementById("theme-icon");
+      } catch (domError) {
+        console.error("[Theme] Error al obtener elementos del DOM:", domError);
+        return; // Sin botón no hay nada que hacer
+      }
+
+      // Guard clause: si no existen los elementos, salir silenciosamente
+      if (!toggleButton || !themeIcon) {
+        console.warn("[Theme] Elementos #theme-toggle o #theme-icon no encontrados.");
+        return;
+      }
+
+      // ── Helper: ¿Está activo el tema oscuro? ───────────────────────────
+      function isDarkMode() {
+        try {
+          return document.documentElement.classList.contains("dark");
+        } catch (error) {
+          console.error("[Theme] Error al verificar clase dark:", error);
+          return false;
+        }
+      }
+
+      // ── Helper: Actualizar el icono con animación ──────────────────────
+      //    light_mode (sol) = tema claro activo → "clic para ir a dark"
+      //    dark_mode (luna) = tema oscuro activo → "clic para ir a light"
+      function updateIcon() {
+        try {
+          var newIcon = isDarkMode() ? "dark_mode" : "light_mode";
+          themeIcon.textContent = newIcon;
+
+          // Animar la rotación del icono
+          themeIcon.classList.remove("animate-icon-rotate");
+          // Force reflow para reiniciar la animación
+          // (sin esto, remover y agregar la clase en el mismo frame no hace nada)
+          void themeIcon.offsetWidth;
+          themeIcon.classList.add("animate-icon-rotate");
+        } catch (error) {
+          console.error("[Theme] Error al actualizar icono:", error);
+        }
+      }
+
+      // ── Helper: Guardar preferencia en localStorage ────────────────────
+      function savePreference(theme) {
+        try {
+          localStorage.setItem(STORAGE_KEY, theme);
+        } catch (storageError) {
+          // No es crítico — el toggle funciona, solo no persiste
+          console.warn("[Theme] No se pudo guardar en localStorage:", storageError.message);
+        }
+      }
+
+      // ── Helper: Agregar transición temporal ────────────────────────────
+      //    Se agrega la clase theme-transition al <html> para que todos
+      //    los elementos transicionen suavemente. Se remueve después
+      //    para no interferir con otras animaciones/transiciones.
+      function addThemeTransition() {
+        try {
+          document.documentElement.classList.add(TRANSITION_CLASS);
+
+          setTimeout(function () {
+            try {
+              document.documentElement.classList.remove(TRANSITION_CLASS);
+            } catch (error) {
+              console.error("[Theme] Error al remover transición:", error);
+            }
+          }, TRANSITION_DURATION);
+        } catch (error) {
+          console.error("[Theme] Error al agregar transición:", error);
+        }
+      }
+
+      // ── Sincronizar icono al cargar ────────────────────────────────────
+      // El tema ya fue aplicado por el script del <head>,
+      // aquí solo sincronizamos el icono para que coincida.
+      updateIcon();
+
+      // ── Event Listener: Toggle al hacer clic ──────────────────────────
+      try {
+        toggleButton.addEventListener("click", function handleThemeToggle() {
+          try {
+            // 1. Activar transición suave
+            addThemeTransition();
+
+            // 2. Toggle la clase "dark"
+            document.documentElement.classList.toggle("dark");
+
+            // 3. Determinar el nuevo tema
+            var newTheme = isDarkMode() ? "dark" : "light";
+
+            // 4. Actualizar icono
+            updateIcon();
+
+            // 5. Persistir en localStorage
+            savePreference(newTheme);
+
+            // 6. Actualizar aria-label para accesibilidad
+            try {
+              var label = isDarkMode()
+                ? "Switch to light theme"
+                : "Switch to dark theme";
+              toggleButton.setAttribute("aria-label", label);
+            } catch (ariaError) {
+              console.warn("[Theme] Error al actualizar aria-label:", ariaError.message);
+            }
+          } catch (toggleError) {
+            console.error("[Theme] Error durante el toggle:", toggleError);
+          }
+        });
+      } catch (listenerError) {
+        console.error("[Theme] Error al registrar event listener:", listenerError);
+      }
+
+      // ── Listener: Cambio de tema del sistema operativo ─────────────────
+      //    Si el usuario no ha guardado preferencia (localStorage vacío),
+      //    y cambia el tema del SO, lo reflejamos automáticamente.
+      try {
+        var mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+        mediaQuery.addEventListener("change", function handleSystemThemeChange(event) {
+          try {
+            // Solo reaccionar si NO hay preferencia guardada
+            var savedTheme = null;
+            try {
+              savedTheme = localStorage.getItem(STORAGE_KEY);
+            } catch (e) {
+              // localStorage no disponible, reaccionar al SO siempre
+            }
+
+            if (savedTheme !== null) {
+              return; // El usuario ya eligió manualmente, respetar su decisión
+            }
+
+            addThemeTransition();
+
+            if (event.matches) {
+              document.documentElement.classList.add("dark");
+            } else {
+              document.documentElement.classList.remove("dark");
+            }
+
+            updateIcon();
+          } catch (error) {
+            console.error("[Theme] Error al reaccionar a cambio del SO:", error);
+          }
+        });
+      } catch (mediaError) {
+        console.warn("[Theme] matchMedia.addEventListener no disponible:", mediaError.message);
+      }
+    });
+  </script>
+
+</body>
+</html>

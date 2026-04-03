@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+  <!-- Fuentes -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+  <!-- Estilos compartidos -->
+  <link href="./site.css" rel="stylesheet" />
+
+  <!-- Detección de tema ANTES del primer paint -->
+  <script>
+    (function initThemeBeforePaint() {
+      "use strict";
+      try {
+        var STORAGE_KEY = "theme";
+        var savedTheme = null;
+        try {
+          savedTheme = localStorage.getItem(STORAGE_KEY);
+        } catch (e) {
+          console.warn("[Theme] localStorage no disponible:", e.message);
+        }
+        var shouldBeDark = false;
+        if (savedTheme === "dark") {
+          shouldBeDark = true;
+        } else if (savedTheme === "light") {
+          shouldBeDark = false;
+        } else {
+          try {
+            shouldBeDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+          } catch (e) {
+            console.warn("[Theme] matchMedia no disponible:", e.message);
+          }
+        }
+        if (shouldBeDark) {
+          document.documentElement.classList.add("dark");
+        }
+      } catch (error) {
+        console.error("[Theme] Error en inicialización:", error);
+      }
+    })();
+  </script>
+
+  <!-- Tailwind Config (CSS vars) -->
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface":                    "rgb(var(--color-surface) / <alpha-value>)",
+            "surface-dim":                "rgb(var(--color-surface-dim) / <alpha-value>)",
+            "surface-bright":             "rgb(var(--color-surface-bright) / <alpha-value>)",
+            "surface-container-lowest":   "rgb(var(--color-surface-container-lowest) / <alpha-value>)",
+            "surface-container-low":      "rgb(var(--color-surface-container-low) / <alpha-value>)",
+            "surface-container":          "rgb(var(--color-surface-container) / <alpha-value>)",
+            "surface-container-high":     "rgb(var(--color-surface-container-high) / <alpha-value>)",
+            "surface-container-highest":  "rgb(var(--color-surface-container-highest) / <alpha-value>)",
+            "surface-variant":            "rgb(var(--color-surface-variant) / <alpha-value>)",
+            "on-surface":                 "rgb(var(--color-on-surface) / <alpha-value>)",
+            "on-surface-variant":         "rgb(var(--color-on-surface-variant) / <alpha-value>)",
+            "on-background":              "rgb(var(--color-on-background) / <alpha-value>)",
+            "background":                 "rgb(var(--color-background) / <alpha-value>)",
+            "primary":                    "rgb(var(--color-primary) / <alpha-value>)",
+            "on-primary":                 "rgb(var(--color-on-primary) / <alpha-value>)",
+            "primary-container":          "rgb(var(--color-primary-container) / <alpha-value>)",
+            "on-primary-container":       "rgb(var(--color-on-primary-container) / <alpha-value>)",
+            "primary-fixed":              "rgb(var(--color-primary-fixed) / <alpha-value>)",
+            "primary-fixed-dim":          "rgb(var(--color-primary-fixed-dim) / <alpha-value>)",
+            "on-primary-fixed":           "rgb(var(--color-on-primary-fixed) / <alpha-value>)",
+            "on-primary-fixed-variant":   "rgb(var(--color-on-primary-fixed-variant) / <alpha-value>)",
+            "inverse-primary":            "rgb(var(--color-inverse-primary) / <alpha-value>)",
+            "secondary":                  "rgb(var(--color-secondary) / <alpha-value>)",
+            "on-secondary":               "rgb(var(--color-on-secondary) / <alpha-value>)",
+            "secondary-container":        "rgb(var(--color-secondary-container) / <alpha-value>)",
+            "on-secondary-container":     "rgb(var(--color-on-secondary-container) / <alpha-value>)",
+            "secondary-fixed":            "rgb(var(--color-secondary-fixed) / <alpha-value>)",
+            "secondary-fixed-dim":        "rgb(var(--color-secondary-fixed-dim) / <alpha-value>)",
+            "on-secondary-fixed":         "rgb(var(--color-on-secondary-fixed) / <alpha-value>)",
+            "on-secondary-fixed-variant": "rgb(var(--color-on-secondary-fixed-variant) / <alpha-value>)",
+            "tertiary":                   "rgb(var(--color-tertiary) / <alpha-value>)",
+            "on-tertiary":                "rgb(var(--color-on-tertiary) / <alpha-value>)",
+            "tertiary-container":         "rgb(var(--color-tertiary-container) / <alpha-value>)",
+            "on-tertiary-container":      "rgb(var(--color-on-tertiary-container) / <alpha-value>)",
+            "tertiary-fixed":             "rgb(var(--color-tertiary-fixed) / <alpha-value>)",
+            "tertiary-fixed-dim":         "rgb(var(--color-tertiary-fixed-dim) / <alpha-value>)",
+            "on-tertiary-fixed":          "rgb(var(--color-on-tertiary-fixed) / <alpha-value>)",
+            "on-tertiary-fixed-variant":  "rgb(var(--color-on-tertiary-fixed-variant) / <alpha-value>)",
+            "outline":                    "rgb(var(--color-outline) / <alpha-value>)",
+            "outline-variant":            "rgb(var(--color-outline-variant) / <alpha-value>)",
+            "inverse-surface":            "rgb(var(--color-inverse-surface) / <alpha-value>)",
+            "inverse-on-surface":         "rgb(var(--color-inverse-on-surface) / <alpha-value>)",
+            "error":                      "rgb(var(--color-error) / <alpha-value>)",
+            "on-error":                   "rgb(var(--color-on-error) / <alpha-value>)",
+            "error-container":            "rgb(var(--color-error-container) / <alpha-value>)",
+            "on-error-container":         "rgb(var(--color-on-error-container) / <alpha-value>)",
+            "surface-tint":               "rgb(var(--color-surface-tint) / <alpha-value>)",
+          },
+          fontFamily: {
+            "headline": ["Playfair Display", "serif"],
+            "body":     ["DM Sans", "sans-serif"],
+            "label":    ["JetBrains Mono", "monospace"],
+          },
+          borderRadius: {
+            DEFAULT: "0.375rem",
+            lg:      "0.625rem",
+            xl:      "1rem",
+            full:    "1.25rem",
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /*
+      ghost-border: Borde sutil que usa CSS vars para cambiar con el tema.
+      ANTES: border: 1px solid rgba(65, 71, 81, 0.15) — hardcoded
+      AHORA: usa --color-outline-variant para adaptarse al tema.
+    */
+    .ghost-border {
+      border: 1px solid rgb(var(--color-outline-variant) / 0.2);
+    }
+
+    /*
+      Línea de acento inferior de las project cards.
+      Se expande al 100% del ancho en hover (controlado desde el HTML
+      con la regla .project-card:hover .accent-line { width: 100% }).
+    */
+    .project-card:hover .accent-line {
+      width: 100%;
+    }
+
+    /*
+      Sombra de hover para las cards.
+      Usa CSS var para que el color de sombra sea coherente con el tema.
+    */
+    .project-card {
+      transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+                  box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .project-card:hover {
+      box-shadow: 0 24px 40px -15px rgb(var(--color-on-surface) / 0.06);
+    }
+  </style>
+</head>
+
+<body class="bg-surface text-on-surface font-body selection:bg-primary/20 selection:text-primary">
+
+  <!-- ====================================================================
+       NAVBAR
+       ==================================================================== -->
+  <nav class="fixed top-0 w-full z-50 bg-surface/85 glass-nav border-b border-outline-variant/20">
+    <div class="flex justify-between items-center max-w-7xl mx-auto px-6 h-16">
+      <a href="./index.html" class="text-xl font-bold tracking-tighter font-headline text-on-surface hover:text-primary transition-colors">
+        Brian Suvias
+      </a>
+
+      <!-- Desktop Nav — "Projects" activo -->
+      <div class="hidden md:flex items-center gap-8 font-body text-sm tracking-tight">
+        <a class="text-primary font-semibold border-b border-primary pb-1" href="./proyectos.html">Projects</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors link-underline" href="./experiencia.html">Experience</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors link-underline" href="./skills.html">Skills</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors link-underline" href="./contacto.html">Contact</a>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button id="theme-toggle" aria-label="Toggle theme"
+          class="p-2 hover:bg-surface-container-high rounded-lg transition-all duration-300 text-on-surface-variant hover:text-primary">
+          <span id="theme-icon" class="material-symbols-outlined">light_mode</span>
+        </button>
+        <button class="p-2 hover:bg-surface-container-high rounded-lg transition-all duration-300 text-on-surface-variant hover:text-primary">
+          <span class="material-symbols-outlined">language</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ====================================================================
+       MAIN CONTENT
+       ==================================================================== -->
+  <main class="pt-32 pb-20 px-6 max-w-7xl mx-auto">
+
+    <!-- Hero Header -->
+    <header class="mb-20 animate-fade-up">
+      <div class="inline-block px-3 py-1.5 mb-4 rounded-full bg-secondary-container/50 text-on-secondary-container font-label text-[10px] uppercase tracking-[0.2em]">
+        Portfolio Overview
+      </div>
+      <h1 class="text-5xl md:text-7xl font-headline font-extrabold tracking-tighter text-on-surface mb-6">
+        Selected <span class="text-gradient">Works.</span>
+      </h1>
+      <p class="max-w-2xl text-on-surface-variant text-lg leading-relaxed">
+        Enterprise systems, security-first platforms, and modern full-stack development
+        across cybersecurity, fintech, and education sectors.
+      </p>
+    </header>
+
+    <!-- Projects Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+      <!-- ══════════════════════════════════════════════════════════════════
+           PROJECT 1: IEECO — Plataforma de Certificación
+           ══════════════════════════════════════════════════════════════════ -->
+      <div class="project-card group relative bg-surface-container-lowest rounded-xl overflow-hidden hover:-translate-y-2 ghost-border animate-fade-up">
+        <div class="h-48 overflow-hidden bg-surface-container-low">
+          <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-70"
+            alt="Enterprise data visualization with connection nodes"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuACNuh9KteJCN4kbJj2SLtRlfQDmTgCd7WyHwVmiwos2FrtDy9hMO8lI1IhaIpCr0QWN-jboBdbVqMVTEskyW1RVk1Dh7WZgpW_5zZGgpZDWroJ9JvtREjtcY9_bwrhcpNggz-VS8qqTbIeuxFsconp4ynRPCHWFn_mjZ5fXgwd2meXpCiQebTmsxyKKsn1cYpk7uOzJah6RjYKkQsAD5bcbWfsCEJuGvJJZPQlXT9G0_nIRGslsx63jMgZlm7Nac6fF7aet4viTUEN" />
+        </div>
+        <div class="p-8">
+          <div class="flex justify-between items-start mb-4">
+            <h3 class="text-xl font-bold font-headline tracking-tight text-on-surface">IEECO</h3>
+            <span class="text-[10px] font-label text-tertiary bg-tertiary/10 px-2 py-0.5 rounded tracking-wider">FEATURED</span>
+          </div>
+          <p class="text-on-surface-variant text-sm mb-6 leading-relaxed">
+            Enterprise CMDB &amp; Certification Platform. Leading the full-stack migration from .NET 4.8 WebForms to .NET 10 Web API + SPA using the Strangler Fig pattern with YARP reverse proxy.
+          </p>
+          <div class="flex flex-wrap gap-2 mb-6">
+            <span class="tech-tag text-[10px] font-label px-2 py-1 bg-secondary-container/50 text-on-secondary-container rounded tracking-wider">.NET 10</span>
+            <span class="tech-tag text-[10px] font-label px-2 py-1 bg-secondary-container/50 text-on-secondary-container rounded tracking-wider">Oracle PL/SQL</span>
+            <span class="tech-tag text-[10px] font-label px-2 py-1 bg-secondary-container/50 text-on-secondary-container rounded tracking-wider">Web Components</span>
+            <span class="tech-tag text-[10px] font-label px-2 py-1 bg-secondary-container/50 text-on-secondary-container rounded tracking-wider">YARP</span>
+          </div>
+          <div class="flex gap-6 mb-8 pt-4 border-t border-outline-variant/15">
+            <div class="flex flex-col">
+              <span class="text-xs font-label text-primary font-bold">JWT</span>
+              <span class="text-[10px] text-on-surface-variant uppercase tracking-wider">Dual Auth</span>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-xs font-label text-primary font-bold">AES-256</span>
+              <span class="text-[10px] text-on-surface-variant uppercase tracking-wider">Encryption</span>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-xs font-label text-primary font-bold">SPA</span>
+              <span class="text-[10px] text-on-surface-variant uppercase tracking-wider">History API</span>
+            </div>
+          </div>
+          <a class="inline-flex items-center gap-2 text-primary text-xs font-bold uppercase tracking-widest hover:gap-4 transition-all" href="#">
+            View Details
+            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+          </a>
+        </div>
+        <div class="accent-line absolute bottom-0 left-0 h-0.5 w-0 bg-primary transition-all duration-500"></div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════════════════
+           PROJECT 2: BeatPhish — Phishing Simulation
+           ══════════════════════════════════════════════════════════════════ -->
+      <div class="project-card group relative bg-surface-container-lowest rounded-xl overflow-hidden hover:-translate-y-2 ghost-border animate-fade-up" style="animation-delay: 0.08s">
+        <div class="h-48 overflow-hidden bg-surface-container-low">
+          <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-70"
+            alt="Cybersecurity dashboard interface"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWkyDWNZL7mLthC-18HANip8rrb2D8cBEN_juy2QLjQVCPiL0jpRWZksKYp5J2vRPJsfn3ykjbtEIgyQfhHZu9EBNqNiLcVu24BmZ-vSs7YpmtYIkpTMSO2As-eRxhqKptfLNrM71RXezT39BYY-TyujHGd47DzqT8ZFVyqjvgeIt1giZ8Fz3zvf3fz1ZR-t2nli1MPqPMfjj0PyS2MtKUW7lZm0arOSBX8pujJThI7yzps-Oo46823LtP6tytMK_PiC1GsaPnT0jA" />
+        </div>
+        <div class="p-8">
+          <div class="flex justify-between items-start mb-4">
+            <h3 class="text-xl font-bold font-headline tracking-tight text-on-surface">BeatPhish</h3>
+            <span class="text-[10px] font-label text-tertiary bg-tertiary/10 px-2 py-0.5 rounded tracking-wider">SECURITY</span>
+          </div>
+          <p class="text-on-surface-variant text-sm mb-6 leading-relaxed">
+            Enterprise Phishing Simulation Platform. Design and orchestration of white-hat security campaigns with behavioral analytics and Checkmarx vulnerability scan integration.
+          </p>
+          <div class="flex flex-wrap gap-2 mb-6">
+            <span class="tech-tag text-[10px] font-label px-2 py-1 bg-tertiary-container/50 text-on-tertiary-container rounded tracking-wider">Checkmarx</span>
+            <span class="tech-tag text-[10px] font-label px-2 py-1 bg-secondary-container/50 text-on-secondary-container rounded tracking-wider">JS/HTML/CSS</span>
+            <span class="tech-tag text-[10px] font-label px-2 py-1 bg-secondary-container/50 text-on-secondary-container rounded tracking-wider">Chart.js</span>
+          </div>
+          <div class="flex gap-6 mb-8 pt-4 border-t border-outline-variant/15">
+            <div class="flex flex-col">
+              <span class="text-xs font-label text-tertiary font-bold">SQL</span>
+              <span class="text-[10px] text-on-surface-variant uppercase tracking-wider">Scan Diffs</span>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-xs font-label text-tertiary font-bold">Donut</span>
+              <span class="text-[10px] text-on-surface-variant uppercase tracking-wider">Severity Charts</span>
+            </div>
+          </div>
+          <a class="inline-flex items-center gap-2 text-primary text-xs font-bold uppercase tracking-widest hover:gap-4 transition-all" href="#">
+            View Details
+            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+          </a>
+        </div>
+        <div class="accent-line absolute bottom-0 left-0 h-0.5 w-0 bg-tertiary transition-all duration-500"></div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════════════════
+           PROJECT 3: EA Concentrator
+           ══════════════════════════════════════════════════════════════════ -->
+      <div class="project-card group relative bg-surface-container-lowest rounded-xl overflow-hidden hover:-translate-y-2 ghost-border animate-fade-up" style="animation-delay: 0.16s">
+        <div class="h-48 overflow-hidden bg-surface-container-low">
+          <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-70"
+            alt="Network graph with interconnected nodes"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-JPpYEtFuSTds4OmbeGFl2UgNPKfUayFHxVThUfGvPb-VNJRuxic8GVZt7pJmVODBfZilaawX18oVubz0g6QAckfcPepXBXZyrDNNqf5K_qKr80FNng8_z9mKL7cLp-elFGi1-P9DKvBcpX992NM54PmUGvNVm0sG9UC3ih0JYQ_PKsmiigLeZbpbBP5oD55cZ84zWnGkg8T18uNUrIPEW6f5nVlsVGVuQrAk83eFuFf4C1LqGHLE_e8VsAKMPDDrGPTOHgWZltHL" />
+        </div>
+        <div class="p-8">
+          <h3 class="text-xl font-bold font-headline tracking-tight text-on-surface mb-4">EA Concentrator</h3>
+          <p class="text-on-surface-variant text-sm mb-6 leading-relaxed">
+            Dynamic organizational chart system for complex enterprise architecture mapping within Grupo Salinas subsidiaries.
+          </p>
+          <div class="flex flex-wrap gap-2 mb-6">
+            <span class="tech-tag text-[10px] font-label px-2 py-1 bg-secondary-container/50 text-on-secondary-container rounded tracking-wider">.NET Core</span>
+            <span class="tech-tag text-[10px] font-label px-2 py-1 bg-secondary-container/50 text-on-secondary-container rounded tracking-wider">Oracle</span>
+            <span class="tech-tag text-[10px] font-label px-2 py-1 bg-secondary-container/50 text-on-secondary-container rounded tracking-wider">Vanilla JS</span>
+          </div>
+          <a class="inline-flex items-center gap-2 text-primary text-xs font-bold uppercase tracking-widest hover:gap-4 transition-all mt-auto pt-4 border-t border-outline-variant/15 w-full" href="#">
+            View Details
+            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+          </a>
+        </div>
+        <div class="accent-line absolute bottom-0 left-0 h-0.5 w-0 bg-primary transition-all duration-500"></div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════════════════
+           PROJECT 4: Fiscal Management — Card ancha (2 columnas)
+           ══════════════════════════════════════════════════════════════════ -->
+      <div class="project-card group relative bg-surface-container-lowest rounded-xl overflow-hidden hover:-translate-y-2 ghost-border md:col-span-1 lg:col-span-2 animate-fade-up" style="animation-delay: 0.24s">
+        <div class="flex flex-col md:flex-row h-full">
+          <div class="md:w-1/2 h-64 md:h-auto overflow-hidden bg-surface-container-low">
+            <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-70"
+              alt="Financial spreadsheet visualization"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXC4GJJ9nu-s0kFnH-4mQsQkphgfP0JxA-nuMGYf_bVavaIoPzSBPvwaATN8UyXZsmP85kNb_ZyC2-zmVFPMB3YcGo6jU5aP67nq1kawLiRtM0P6fZQJlIVyWDAUOBIXYtzaKCMJcRhP-qWOZgKEBOCzxrjkAsTlqjQ8MO0tKyPN0PyBnCqgRnphaglorkwATQjV3deK8ii22_ivIJmbjqN56kFxP7UDBD1FMFjkk2ujXtRB9sIObr2jY3Kv3rg29S3y2ZagOxUEfk" />
+          </div>
+          <div class="md:w-1/2 p-8 flex flex-col">
+            <div class="flex justify-between items-start mb-4">
+              <h3 class="text-xl font-bold font-headline tracking-tight text-on-surface">Fiscal Management System</h3>
+              <span class="text-[10px] font-label text-secondary bg-secondary/10 px-2 py-0.5 rounded tracking-wider">FREELANCE</span>
+            </div>
+            <p class="text-on-surface-variant text-sm mb-6 leading-relaxed">
+              End-to-end tax and accounting ecosystem for a professional accounting firm.
+              Features automated reporting, multi-tenant auditing, and secure transaction logging.
+            </p>
+            <div class="flex flex-wrap gap-2 mb-8">
+              <span class="tech-tag text-[10px] font-label px-2 py-1 bg-secondary-container/50 text-on-secondary-container rounded tracking-wider">Angular 19</span>
+              <span class="tech-tag text-[10px] font-label px-2 py-1 bg-secondary-container/50 text-on-secondary-container rounded tracking-wider">.NET 10</span>
+              <span class="tech-tag text-[10px] font-label px-2 py-1 bg-secondary-container/50 text-on-secondary-container rounded tracking-wider">SQL Server</span>
+            </div>
+            <div class="mt-auto">
+              <a class="inline-flex items-center gap-2 text-primary text-xs font-bold uppercase tracking-widest hover:gap-4 transition-all" href="#">
+                View Details
+                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="accent-line absolute bottom-0 left-0 h-0.5 w-0 bg-secondary transition-all duration-500"></div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════════════════
+           PROJECT 5: IPN Bulletin System
+           ══════════════════════════════════════════════════════════════════ -->
+      <div class="project-card group relative bg-surface-container-lowest rounded-xl overflow-hidden hover:-translate-y-2 ghost-border animate-fade-up" style="animation-delay: 0.32s">
+        <div class="h-48 overflow-hidden bg-surface-container-low">
+          <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-70"
+            alt="Editorial digital news layout"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-VW61NXBQPO9KtmWMVJLrVVJ5EC40obodLzwZ8VbJSOiyTsqpBdr-Bfw443q15Ve9sc_yoEtgHRVJ2TyhSUj51OV6pKLBSnMnBB6rHZKhf7RP413M8e6l_31yorc6u1Pta_GluzJIU6uCXtOlfOG3mgry3kzRfA1FgYCi1xAM0LV5QUKhwpJqS9mlPzWHVCLfG7ecGZmc6LOEfmId79RLEfo8Q2ib0p8FMpg32O2_CMnQ32NvYWonRZm--OMYrLIppaO3_Q3crSGN" />
+        </div>
+        <div class="p-8">
+          <h3 class="text-xl font-bold font-headline tracking-tight text-on-surface mb-4">IPN Bulletin System</h3>
+          <p class="text-on-surface-variant text-sm mb-6 leading-relaxed">
+            News management and dissemination CMS for the Instituto Politécnico Nacional.
+          </p>
+          <div class="flex flex-wrap gap-2 mb-6">
+            <span class="tech-tag text-[10px] font-label px-2 py-1 bg-secondary-container/50 text-on-secondary-container rounded tracking-wider">Full-stack</span>
+            <span class="tech-tag text-[10px] font-label px-2 py-1 bg-secondary-container/50 text-on-secondary-container rounded tracking-wider">CMS</span>
+          </div>
+          <a class="inline-flex items-center gap-2 text-primary text-xs font-bold uppercase tracking-widest hover:gap-4 transition-all pt-4 border-t border-outline-variant/15 w-full mt-4" href="#">
+            View Details
+            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+          </a>
+        </div>
+        <div class="accent-line absolute bottom-0 left-0 h-0.5 w-0 bg-primary transition-all duration-500"></div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════════════════
+           PROJECT 6: PetVet — Veterinary App (NUEVO)
+           ══════════════════════════════════════════════════════════════════ -->
+      <div class="project-card group relative bg-surface-container-lowest rounded-xl overflow-hidden hover:-translate-y-2 ghost-border lg:col-span-2 animate-fade-up" style="animation-delay: 0.40s">
+        <div class="p-8">
+          <div class="flex justify-between items-start mb-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary">
+                <span class="material-symbols-outlined">pets</span>
+              </div>
+              <h3 class="text-xl font-bold font-headline tracking-tight text-on-surface">PetVet</h3>
+            </div>
+            <span class="text-[10px] font-label text-secondary bg-secondary/10 px-2 py-0.5 rounded tracking-wider animate-pulse-glow">IN PROGRESS</span>
+          </div>
+          <p class="text-on-surface-variant text-sm mb-6 leading-relaxed max-w-2xl">
+            Veterinary clinic management application with multi-layered C# architecture, Dapper micro-ORM,
+            and Supabase PostgreSQL backend. Features appointment scheduling, medical records, and billing.
+          </p>
+          <div class="flex flex-wrap gap-2 mb-6">
+            <span class="tech-tag text-[10px] font-label px-2 py-1 bg-secondary-container/50 text-on-secondary-container rounded tracking-wider">.NET 10</span>
+            <span class="tech-tag text-[10px] font-label px-2 py-1 bg-secondary-container/50 text-on-secondary-container rounded tracking-wider">Supabase</span>
+            <span class="tech-tag text-[10px] font-label px-2 py-1 bg-secondary-container/50 text-on-secondary-container rounded tracking-wider">PostgreSQL</span>
+            <span class="tech-tag text-[10px] font-label px-2 py-1 bg-secondary-container/50 text-on-secondary-container rounded tracking-wider">Dapper</span>
+            <span class="tech-tag text-[10px] font-label px-2 py-1 bg-secondary-container/50 text-on-secondary-container rounded tracking-wider">C#</span>
+          </div>
+          <div class="flex gap-6 pt-4 border-t border-outline-variant/15">
+            <div class="flex flex-col">
+              <span class="text-xs font-label text-secondary font-bold">Layered</span>
+              <span class="text-[10px] text-on-surface-variant uppercase tracking-wider">Architecture</span>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-xs font-label text-secondary font-bold">Supabase</span>
+              <span class="text-[10px] text-on-surface-variant uppercase tracking-wider">Auth + DB</span>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-xs font-label text-secondary font-bold">Dapper</span>
+              <span class="text-[10px] text-on-surface-variant uppercase tracking-wider">Micro-ORM</span>
+            </div>
+          </div>
+        </div>
+        <div class="accent-line absolute bottom-0 left-0 h-0.5 w-0 bg-secondary transition-all duration-500"></div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════════════════
+           PROJECT 7: Dental App (placeholder compacto)
+           ══════════════════════════════════════════════════════════════════ -->
+      <div class="project-card group relative bg-surface-container rounded-xl overflow-hidden hover:-translate-y-2 ghost-border animate-fade-up" style="animation-delay: 0.48s">
+        <div class="p-8">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-full bg-tertiary/10 flex items-center justify-center text-tertiary">
+              <span class="material-symbols-outlined">dentistry</span>
+            </div>
+            <h3 class="text-xl font-bold font-headline tracking-tight text-on-surface">Dental App</h3>
+          </div>
+          <p class="text-on-surface-variant text-sm mb-6 leading-relaxed">
+            Dental clinic management system — appointment scheduling, patient records, and treatment tracking.
+          </p>
+          <div class="flex flex-wrap gap-2 mb-6">
+            <span class="tech-tag text-[10px] font-label px-2 py-1 bg-tertiary-container/50 text-on-tertiary-container rounded tracking-wider">Freelance</span>
+            <span class="tech-tag text-[10px] font-label px-2 py-1 bg-secondary-container/50 text-on-secondary-container rounded tracking-wider">Full-stack</span>
+          </div>
+          <a class="inline-flex items-center gap-2 text-primary text-xs font-bold uppercase tracking-widest hover:gap-4 transition-all pt-4 border-t border-outline-variant/15 w-full" href="#">
+            View Details
+            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+          </a>
+        </div>
+        <div class="accent-line absolute bottom-0 left-0 h-0.5 w-0 bg-tertiary transition-all duration-500"></div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ====================================================================
+       FOOTER
+       ==================================================================== -->
+  <footer class="bg-surface-container-high w-full py-12 border-t border-outline-variant/20">
+    <div class="flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto px-6 gap-4">
+      <div class="font-label text-xs uppercase tracking-widest text-on-surface-variant">
+        © 2026 Brian Suvias Salazar
+      </div>
+      <div class="flex items-center gap-8">
+        <a class="font-label text-xs uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors link-underline" href="#">LinkedIn</a>
+        <a class="font-label text-xs uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors link-underline" href="#">GitHub</a>
+        <a class="font-label text-xs uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors link-underline" href="#">Email</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Theme Toggle JS -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      "use strict";
+      var STORAGE_KEY = "theme";
+      var TRANSITION_CLASS = "theme-transition";
+      var TRANSITION_DURATION = 300;
+
+      var toggleButton = null;
+      var themeIcon = null;
+
+      try {
+        toggleButton = document.getElementById("theme-toggle");
+        themeIcon = document.getElementById("theme-icon");
+      } catch (domError) {
+        console.error("[Theme] Error al obtener elementos del DOM:", domError);
+        return;
+      }
+
+      if (!toggleButton || !themeIcon) {
+        console.warn("[Theme] Elementos #theme-toggle o #theme-icon no encontrados.");
+        return;
+      }
+
+      function isDarkMode() {
+        try { return document.documentElement.classList.contains("dark"); }
+        catch (e) { console.error("[Theme]:", e); return false; }
+      }
+
+      function updateIcon() {
+        try {
+          themeIcon.textContent = isDarkMode() ? "dark_mode" : "light_mode";
+          themeIcon.classList.remove("animate-icon-rotate");
+          void themeIcon.offsetWidth;
+          themeIcon.classList.add("animate-icon-rotate");
+        } catch (e) { console.error("[Theme] updateIcon:", e); }
+      }
+
+      function savePreference(theme) {
+        try { localStorage.setItem(STORAGE_KEY, theme); }
+        catch (e) { console.warn("[Theme] localStorage:", e.message); }
+      }
+
+      function addThemeTransition() {
+        try {
+          document.documentElement.classList.add(TRANSITION_CLASS);
+          setTimeout(function () {
+            try { document.documentElement.classList.remove(TRANSITION_CLASS); }
+            catch (e) { console.error("[Theme]:", e); }
+          }, TRANSITION_DURATION);
+        } catch (e) { console.error("[Theme] transition:", e); }
+      }
+
+      updateIcon();
+
+      try {
+        toggleButton.addEventListener("click", function () {
+          try {
+            addThemeTransition();
+            document.documentElement.classList.toggle("dark");
+            updateIcon();
+            savePreference(isDarkMode() ? "dark" : "light");
+            try {
+              toggleButton.setAttribute("aria-label",
+                isDarkMode() ? "Switch to light theme" : "Switch to dark theme"
+              );
+            } catch (e) {}
+          } catch (toggleError) {
+            console.error("[Theme] toggle:", toggleError);
+          }
+        });
+      } catch (e) { console.error("[Theme] listener:", e); }
+
+      try {
+        var mq = window.matchMedia("(prefers-color-scheme: dark)");
+        mq.addEventListener("change", function (event) {
+          try {
+            var saved = null;
+            try { saved = localStorage.getItem(STORAGE_KEY); } catch (e) {}
+            if (saved !== null) return;
+            addThemeTransition();
+            if (event.matches) { document.documentElement.classList.add("dark"); }
+            else { document.documentElement.classList.remove("dark"); }
+            updateIcon();
+          } catch (e) { console.error("[Theme] SO change:", e); }
+        });
+      } catch (e) { console.warn("[Theme] matchMedia:", e.message); }
+    });
+  </script>
+
+</body>
+</html>
